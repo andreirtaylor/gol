@@ -2,6 +2,8 @@
 
 A dumb implementation of Conways game of life to teach me about go
 
+![Game of Life in Action](pic/gol.gif)
+
 ## To Use
 
 ```go
