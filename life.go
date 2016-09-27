@@ -1,9 +1,13 @@
 package life
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
-const Alive = "A"
-const Dead = "D"
+const Alive = "\u25A2 "
+const Dead = "\u25A3 "
 const Sep = "\n"
 
 // Represents a game object
@@ -28,8 +32,19 @@ func (g Game) String() string {
 	return ret
 }
 
+func (g Game) RunEvery(seconds time.Duration) {
+	seconds *= time.Second
+	fmt.Print(g)
+	for {
+		time.Sleep(seconds)
+		g = g.Advance()
+		fmt.Printf("\033[0;0H")
+		fmt.Print(g)
+	}
+}
+
 // generates a empty board the same size as the receiver
-func NewGame(g Game) Game {
+func cloneGame(g Game) Game {
 	ret := Game{make([][]bool, len(g.Board))}
 	for i, row := range g.Board {
 		ret.Board[i] = make([]bool, len(row))
@@ -37,8 +52,22 @@ func NewGame(g Game) Game {
 	return ret
 }
 
+// generates a empty board the same size as the receiver
+func NewGame(w, h int) Game {
+	ret := Game{make([][]bool, w)}
+	for i := 0; i < w; i += 1 {
+		ret.Board[i] = make([]bool, h)
+		for j := 0; j < h; j += 1 {
+			if rand.Float32() < 0.1 {
+				ret.Board[i][j] = true
+			}
+		}
+	}
+	return ret
+}
+
 func (g Game) Advance() Game {
-	ret := NewGame(g)
+	ret := cloneGame(g)
 	for i, row := range g.Board {
 		for j, _ := range row {
 			n := g.getNeighbours(i, j)
