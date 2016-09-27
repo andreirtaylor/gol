@@ -1,4 +1,4 @@
-package life
+package gol
 
 import (
 	"encoding/json"

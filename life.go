@@ -1,4 +1,4 @@
-package life
+package gol
 
 import (
 	"fmt"
@@ -15,50 +15,15 @@ type Game struct {
 	Board [][]bool
 }
 
-func (g Game) String() string {
-	ret := ""
-	for ind, row := range g.Board {
-		for _, cell := range row {
-			if cell {
-				ret = fmt.Sprintf("%s%s", ret, Alive)
-			} else {
-				ret = fmt.Sprintf("%s%s", ret, Dead)
-			}
-		}
-		if ind != len(g.Board)-1 {
-			ret = fmt.Sprintf("%s%s", ret, Sep)
-		}
-	}
-	return ret
-}
-
-func (g Game) RunEvery(seconds time.Duration) {
-	seconds *= time.Second
-	fmt.Print(g)
-	for {
-		time.Sleep(seconds)
-		g = g.Advance()
-		fmt.Printf("\033[0;0H")
-		fmt.Print(g)
-	}
-}
-
-// generates a empty board the same size as the receiver
-func cloneGame(g Game) Game {
-	ret := Game{make([][]bool, len(g.Board))}
-	for i, row := range g.Board {
-		ret.Board[i] = make([]bool, len(row))
-	}
-	return ret
-}
-
 // generates a empty board the same size as the receiver
 func NewGame(w, h int) Game {
+	s1 := rand.NewSource(time.Now().UnixNano())
+	r1 := rand.New(s1)
 	ret := Game{make([][]bool, w)}
 	for i := 0; i < w; i += 1 {
 		ret.Board[i] = make([]bool, h)
 		for j := 0; j < h; j += 1 {
-			if rand.Float32() < 0.1 {
+			if r1.Float32() < 0.1 {
 				ret.Board[i][j] = true
 			}
 		}
@@ -66,6 +31,19 @@ func NewGame(w, h int) Game {
 	return ret
 }
 
+// Run advance every s seconds
+func (g Game) RunEvery(s time.Duration) {
+	s *= time.Second
+	for {
+		time.Sleep(s)
+		g = g.Advance()
+		fmt.Printf("\033[0;0H")
+		fmt.Print(g)
+	}
+}
+
+// advances the board a single time
+// returns a Game representing the new board
 func (g Game) Advance() Game {
 	ret := cloneGame(g)
 	for i, row := range g.Board {
@@ -87,6 +65,36 @@ func (g Game) Advance() Game {
 	return ret
 }
 
+// Uses Constants, alive Dead and seperator to draw the board in unicode
+func (g Game) String() string {
+	ret := ""
+	for ind, row := range g.Board {
+		for _, cell := range row {
+			if cell {
+				ret = fmt.Sprintf("%s%s", ret, Alive)
+			} else {
+				ret = fmt.Sprintf("%s%s", ret, Dead)
+			}
+		}
+		if ind != len(g.Board)-1 {
+			ret = fmt.Sprintf("%s%s", ret, Sep)
+		}
+	}
+	return ret
+}
+
+// HELPER FUNCTIONS
+
+// generates a empty board the same size as g
+func cloneGame(g Game) Game {
+	ret := Game{make([][]bool, len(g.Board))}
+	for i, row := range g.Board {
+		ret.Board[i] = make([]bool, len(row))
+	}
+	return ret
+}
+
+// get number of alive neighbours for a given x, y coordinate
 func (g Game) getNeighbours(i, j int) int {
 	ret := 0
 	for row := max(i-1, 0); row < min(i+2, len(g.Board)); row += 1 {
