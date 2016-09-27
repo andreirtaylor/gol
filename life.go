@@ -35,10 +35,10 @@ func NewGame(w, h int) Game {
 func (g Game) RunEvery(s time.Duration) {
 	s *= time.Second
 	for {
-		time.Sleep(s)
 		g = g.Advance()
 		fmt.Printf("\033[0;0H")
 		fmt.Print(g)
+		time.Sleep(s)
 	}
 }
 
