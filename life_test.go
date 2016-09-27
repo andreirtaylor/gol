@@ -69,3 +69,47 @@ func TestPrinting(t *testing.T) {
 		}
 	}
 }
+
+func TestGetNeighbours(t *testing.T) {
+	cases := []struct {
+		input  [][]bool
+		output int
+	}{
+		{
+			[][]bool{
+				[]bool{true, false},
+				[]bool{false, false}},
+			1,
+		},
+		{
+			[][]bool{
+				[]bool{false, false, false},
+				[]bool{false, false, false},
+				[]bool{false, false, false}},
+			0,
+		},
+		{
+			[][]bool{
+				[]bool{true, true, true},
+				[]bool{true, false, true},
+				[]bool{true, true, true}},
+			8,
+		},
+		{
+			[][]bool{
+				[]bool{true, true, true},
+				[]bool{true, true, true},
+				[]bool{true, true, true}},
+			8,
+		},
+	}
+
+	for i, c := range cases {
+		var g Game
+		g.Board = c.input
+		neighbours := g.getNeighbours(1, 1)
+		if neighbours != c.output {
+			t.Errorf("Expected '%d' to be '%d'. Test: %d", neighbours, c.output, i)
+		}
+	}
+}
