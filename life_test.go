@@ -113,3 +113,50 @@ func TestGetNeighbours(t *testing.T) {
 		}
 	}
 }
+
+func TestAdvance(t *testing.T) {
+	cases := []struct {
+		input, output [][]bool
+	}{
+		{
+			[][]bool{
+				[]bool{true, false},
+				[]bool{false, false}},
+			[][]bool{
+				[]bool{false, false},
+				[]bool{false, false}},
+		},
+		{
+			[][]bool{
+				[]bool{true, true},
+				[]bool{true, false}},
+			[][]bool{
+				[]bool{true, true},
+				[]bool{true, true}},
+		},
+		{
+			[][]bool{
+				[]bool{true, true, false},
+				[]bool{true, true, false},
+				[]bool{true, false, true}},
+			[][]bool{
+				[]bool{true, true, false},
+				[]bool{false, false, true},
+				[]bool{true, false, false}},
+		},
+	}
+
+	for i, c := range cases {
+		var g Game
+		g.Board = c.input
+		g2 := g.Advance()
+		g.Board = c.output
+		if g.String() != g2.String() {
+			t.Errorf(
+				"Expected \n'%s'\n to be \n'%s'\n. Test: %d",
+				g2.String(),
+				g.String(),
+				i)
+		}
+	}
+}
